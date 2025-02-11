@@ -1,7 +1,7 @@
 {
-  "name": "fe-vite-nestjs-hoidanit",
-  "author": "Hỏi Dân IT với Eric",
-  "description": "Frontend for series Nest.JS Youtube Hỏi Dân IT",
+  "name": "fe-vite-nestjs",
+  "author": "ITO",
+  "description": "Frontend for Nest.JS",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -13,13 +13,14 @@
   },
   "dependencies": {
     "@ant-design/icons": "4.8.0",
-    "@ant-design/pro-components": "2.6.46",
+    "@ant-design/pro-components": "^2.8.3",
     "@ant-design/pro-layout": "7.17.19",
+    "@nestjs/common": "^10.4.15",
     "@nestjs/mapped-types": "*",
     "@reduxjs/toolkit": "1.9.3",
     "antd": "5.13.1",
     "async-mutex": "0.4.0",
-    "axios": "1.6.5",
+    "axios": "^1.7.9",
     "dayjs": "1.11.8",
     "dotenv": "16.0.3",
     "html-react-parser": "4.0.0",
@@ -30,7 +31,7 @@
     "react-device-detect": "2.2.3",
     "react-dom": "18.2.0",
     "react-icons": "4.8.0",
-    "react-quill": "2.0.0",
+    "react-quill": "^2.0.0",
     "react-redux": "8.0.5",
     "react-router-dom": "6.11.2",
     "react-spinners": "0.13.8",
@@ -46,7 +47,7 @@
     "@vitejs/plugin-react-swc": "3.0.0",
     "rollup-plugin-visualizer": "5.9.0",
     "sass": "1.62.1",
-    "typescript": "5.3.3",
-    "vite": "4.2.0"
+    "typescript": "^5.7.3",
+    "vite": "^4.5.5"
   }
 }
