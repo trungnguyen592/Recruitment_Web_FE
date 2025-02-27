@@ -10,6 +10,7 @@ import {
   IPermission,
   IRole,
   ISubscribers,
+  IUpdateProfile,
 } from "@/types/backend";
 import axios from "config/axios-customize";
 
@@ -126,8 +127,8 @@ export const callCreateUser = (user: IUser) => {
   return axios.post<IBackendRes<IUser>>("/api/v1/users", { ...user });
 };
 
-export const callUpdateUser = (user: IUser) => {
-  return axios.patch<IBackendRes<IUser>>(`/api/v1/users`, { ...user });
+export const callUpdateUser = (id: string, user: IUser) => {
+  return axios.patch<IBackendRes<IUser>>(`/api/v1/users/${id}`, { ...user });
 };
 
 export const callDeleteUser = (id: string) => {
@@ -195,7 +196,26 @@ export const callFetchResumeById = (id: string) => {
 };
 
 export const callFetchResumeByUser = () => {
-  return axios.post<IBackendRes<IResume[]>>(`/api/v1/resumes/by-user`);
+  const token = localStorage.getItem("access_token"); // Lấy token từ localStorage
+  console.log("🔹 Token gửi đi:", token); // Debug token
+
+  return axios
+    .post<IBackendRes<IResume[]>>(
+      `/api/v1/resumes/by-user`,
+      {}, // Không có body
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Thêm token vào headers
+        },
+      }
+    )
+    .catch((error) => {
+      console.error(
+        "❌ Error fetching resumes:",
+        error.response?.data || error.message
+      );
+      return { data: [] }; // Tránh lỗi khi không fetch được
+    });
 };
 
 /**
