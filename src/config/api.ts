@@ -141,6 +141,43 @@ export const callFetchUser = (query: string) => {
   );
 };
 
+export const callChangePassword = (
+  oldPassword: string,
+  newPassword: string,
+  confirmPassword: string
+) => {
+  return axios.post<IBackendRes<string>>("/api/v1/users/change-password", {
+    oldPassword,
+    newPassword,
+    confirmPassword,
+  });
+};
+/**
+ * Gửi email để lấy OTP quên mật khẩu
+ */
+export const callForgotPassword = (email: string) => {
+  return axios.post<IBackendRes<string>>("/api/v1/auth/forgot-password", {
+    email,
+  });
+};
+
+/**
+ * Xác nhận OTP và đặt lại mật khẩu mới
+ */
+export const callResetPassword = (
+  email: string,
+  otp: string,
+  newPassword: string,
+  confirmPassword: string
+) => {
+  return axios.post<IBackendRes<string>>("/api/v1/auth/reset-password", {
+    email,
+    otp,
+    newPassword,
+    confirmPassword,
+  });
+};
+
 /**
  * 
 Module Job
@@ -159,6 +196,12 @@ export const callDeleteJob = (id: string) => {
 
 export const callFetchJob = (query: string) => {
   return axios.get<IBackendRes<IModelPaginate<IJob>>>(`/api/v1/jobs?${query}`);
+};
+
+export const callFetchJobByHR = (query: string) => {
+  return axios.get<IBackendRes<IModelPaginate<IJob>>>(
+    `/api/v1/jobs/admin?${query}`
+  );
 };
 
 export const callFetchJobById = (id: string) => {

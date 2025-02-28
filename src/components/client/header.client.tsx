@@ -83,11 +83,15 @@ const Header = (props: any) => {
       key: "manage-account",
       icon: <ContactsOutlined />,
     },
-    {
-      label: <Link to={"/admin"}>Trang Quản Trị</Link>,
-      key: "admin",
-      icon: <DashOutlined />,
-    },
+    ...(user.role.name !== "NORMAL USER"
+      ? [
+          {
+            label: <Link to={"/admin"}>Trang Quản Trị</Link>,
+            key: "admin",
+            icon: <DashOutlined />,
+          },
+        ]
+      : []),
     {
       label: (
         <label style={{ cursor: "pointer" }} onClick={() => handleLogout()}>

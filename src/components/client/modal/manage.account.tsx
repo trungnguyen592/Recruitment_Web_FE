@@ -18,8 +18,11 @@ import { useState, useEffect } from "react";
 import {
   callFetchResumeByUser,
   callGetSubscriberSkills,
+  callResetPassword,
   callUpdateSubscriber,
   callUpdateUser,
+  callForgotPassword,
+  callChangePassword,
 } from "@/config/api";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
@@ -162,47 +165,266 @@ const UserUpdateInfo = (props: any) => {
 
   return (
     <>
-      <Form onFinish={onFinish} form={form}>
-        <Row gutter={[20, 20]}>
-          <Col span={24}>
-            <Form.Item label={"Họ và tên"} name={"name"}>
-              <Input placeholder="Nhập họ và tên" />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label={"Email"} name={"email"}>
-              <Input placeholder="Nhập email" />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label="Tuổi" name="age">
-              <Input
-                placeholder="Nhập tuổi"
-                value={age}
-                onChange={handleAgeChange} // Chặn nhập chữ
-              />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label={"Giới tính"} name={"gender"}>
-              <Select placeholder="Chọn giới tính">
-                <Select.Option value="male">Nam</Select.Option>
-                <Select.Option value="female">Nữ</Select.Option>
-                <Select.Option value="other">Khác</Select.Option>
-              </Select>
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Form.Item label={"Địa chỉ"} name={"address"}>
-              <Input placeholder="Nhập địa chỉ" />
-            </Form.Item>
-          </Col>
-          <Col span={24}>
-            <Button onClick={() => form.submit()}>Cập nhật</Button>
-          </Col>
-        </Row>
-      </Form>
+      <Row justify="start">
+        <Col span={16} offset={2}>
+          {/* Điều chỉnh offset để căn chỉnh */}
+          <Form onFinish={onFinish} form={form} layout="horizontal">
+            <Row gutter={[20, 20]}>
+              <Col span={24}>
+                <Form.Item
+                  label="Họ và tên"
+                  name="name"
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                >
+                  <Input
+                    placeholder="Nhập họ và tên"
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  label="Email"
+                  name="email"
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                >
+                  <Input placeholder="Nhập email" style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  label="Tuổi"
+                  name="age"
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                >
+                  <Input
+                    placeholder="Nhập tuổi"
+                    value={age}
+                    onChange={handleAgeChange}
+                    style={{ width: "100%" }}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  label="Giới tính"
+                  name="gender"
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                >
+                  <Select
+                    placeholder="Chọn giới tính"
+                    style={{ width: "100%" }}
+                  >
+                    <Select.Option value="male">Nam</Select.Option>
+                    <Select.Option value="female">Nữ</Select.Option>
+                    <Select.Option value="other">Khác</Select.Option>
+                  </Select>
+                </Form.Item>
+              </Col>
+              <Col span={24}>
+                <Form.Item
+                  label="Địa chỉ"
+                  name="address"
+                  labelCol={{ span: 6 }}
+                  wrapperCol={{ span: 18 }}
+                >
+                  <Input placeholder="Nhập địa chỉ" style={{ width: "100%" }} />
+                </Form.Item>
+              </Col>
+              <Col
+                span={24}
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <Button onClick={() => form.submit()} type="primary">
+                  Cập nhật
+                </Button>
+              </Col>
+            </Row>
+          </Form>
+        </Col>
+      </Row>
     </>
+  );
+};
+
+const ChangePassword = () => {
+  const user = useAppSelector((state) => state.account.user);
+  const [loading, setLoading] = useState(false);
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpEmail, setOtpEmail] = useState("");
+
+  const handleChangePassword = async (values: any) => {
+    const { oldPassword, newPassword, confirmPassword } = values;
+
+    if (newPassword !== confirmPassword) {
+      return notification.error({
+        message: "Lỗi",
+        description: "Mật khẩu mới và xác nhận mật khẩu không khớp!",
+      });
+    }
+
+    setLoading(true);
+    try {
+      const res = await callChangePassword(
+        oldPassword,
+        newPassword,
+        confirmPassword
+      );
+      if (res.data) {
+        message.success("Thay đổi mật khẩu thành công!");
+      }
+    } catch (error: any) {
+      notification.error({
+        message: "Lỗi",
+        description: error.response?.data?.message || "Có lỗi xảy ra!",
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleSendOTP = async (values: any) => {
+    const { email } = values;
+    setLoading(true);
+
+    try {
+      const res = await callForgotPassword(email);
+      if (res.data) {
+        message.success("Đã gửi OTP, vui lòng kiểm tra email!");
+        setOtpSent(true);
+        setOtpEmail(email);
+      }
+    } catch (error: any) {
+      notification.error({
+        message: "Lỗi",
+        description: error.response?.data?.message || "Gửi OTP thất bại!",
+      });
+    }
+    setLoading(false);
+  };
+
+  const handleResetPassword = async (values: any) => {
+    const { otp, newPassword, confirmPassword } = values;
+
+    if (newPassword !== confirmPassword) {
+      return notification.error({
+        message: "Lỗi",
+        description: "Mật khẩu mới và xác nhận mật khẩu không khớp!",
+      });
+    }
+
+    setLoading(true);
+    try {
+      const res = await callResetPassword(
+        otpEmail,
+        otp,
+        newPassword,
+        confirmPassword
+      );
+      if (res.data) {
+        message.success("Đặt lại mật khẩu thành công!");
+        setOtpSent(false);
+      }
+    } catch (error: any) {
+      notification.error({
+        message: "Lỗi",
+        description:
+          error.response?.data?.message || "Đặt lại mật khẩu thất bại!",
+      });
+    }
+    setLoading(false);
+  };
+
+  return (
+    <Tabs defaultActiveKey="change-password">
+      {/* Tab 1: Đổi mật khẩu khi nhớ mật khẩu cũ */}
+      <Tabs.TabPane tab="Đổi mật khẩu" key="change-password">
+        <Form onFinish={handleChangePassword} layout="vertical">
+          <Form.Item
+            label="Mật khẩu cũ"
+            name="oldPassword"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu cũ!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="Mật khẩu mới"
+            name="newPassword"
+            rules={[{ required: true, message: "Vui lòng nhập mật khẩu mới!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="Xác nhận mật khẩu"
+            name="confirmPassword"
+            rules={[{ required: true, message: "Vui lòng xác nhận mật khẩu!" }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Button type="primary" htmlType="submit" loading={loading}>
+            Đổi mật khẩu
+          </Button>
+        </Form>
+      </Tabs.TabPane>
+
+      {/* Tab 2: Quên mật khẩu */}
+      <Tabs.TabPane tab="Quên mật khẩu" key="forgot-password">
+        {!otpSent ? (
+          <Form onFinish={handleSendOTP} layout="vertical">
+            <Form.Item
+              label="Email"
+              name="email"
+              rules={[
+                {
+                  required: true,
+                  type: "email",
+                  message: "Vui lòng nhập email hợp lệ!",
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Gửi OTP
+            </Button>
+          </Form>
+        ) : (
+          <Form onFinish={handleResetPassword} layout="vertical">
+            <Form.Item
+              label="Mã OTP"
+              name="otp"
+              rules={[{ required: true, message: "Vui lòng nhập mã OTP!" }]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label="Mật khẩu mới"
+              name="newPassword"
+              rules={[
+                { required: true, message: "Vui lòng nhập mật khẩu mới!" },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Form.Item
+              label="Xác nhận mật khẩu"
+              name="confirmPassword"
+              rules={[
+                { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+              ]}
+            >
+              <Input.Password />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={loading}>
+              Đặt lại mật khẩu
+            </Button>
+          </Form>
+        )}
+      </Tabs.TabPane>
+    </Tabs>
   );
 };
 
@@ -299,7 +521,7 @@ const ManageAccount = (props: IProps) => {
     {
       key: "user-password",
       label: `Thay đổi mật khẩu`,
-      children: `//todo`,
+      children: <ChangePassword />,
     },
   ];
 

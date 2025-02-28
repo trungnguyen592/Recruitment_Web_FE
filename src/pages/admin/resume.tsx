@@ -20,7 +20,6 @@ import { useState, useRef } from "react";
 import dayjs from "dayjs";
 import { callDeleteResume } from "@/config/api";
 import queryString from "query-string";
-import { useNavigate } from "react-router-dom";
 import { fetchResume } from "@/redux/slice/resumeSlide";
 import ViewDetailResume from "@/components/admin/resume/view.resume";
 import { ALL_PERMISSIONS } from "@/config/permissions";
